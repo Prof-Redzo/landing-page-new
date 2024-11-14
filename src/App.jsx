@@ -1,6 +1,12 @@
-import { useState } from "react";
-import "./App.css";
+import { useEffect, useState } from "react";
 import { Route, Routes, useNavigate, Navigate } from "react-router-dom";
+
+import Home from "./pages/Home";
+import About from "./pages/About";
+import Details from "./pages/Details";
+import ContactUs from "./pages/ContactUs";
+import { ROUTES, ACTIVE_SECTION_KEY } from "./constants";
+import "./App.css";
 
 function App() {
   const [activeSection, setActiveSection] = useState(0);
@@ -11,29 +17,37 @@ function App() {
     {
       id: 0,
       name: "Home",
-      path: "/"
+      path: ROUTES.HOME,
     },
     {
       id: 1,
       name: "About",
-      path: "/about"
+      path: ROUTES.ABOUT,
     },
     {
       id: 2,
       name: "Details",
-      path: "/details"
+      path: ROUTES.DETAILS,
     },
     {
       id: 3,
       name: "Contact us",
-      path: "/contact-us"
+      path: ROUTES.CONTACT_US,
     },
   ];
 
   const handleClickSection = (sectionId, path) => {
     setActiveSection(sectionId);
+    localStorage.setItem(ACTIVE_SECTION_KEY, sectionId);
     navigate(path);
-  }
+  };
+
+  useEffect(() => {
+    const activeSectionFromStorage = localStorage.getItem(ACTIVE_SECTION_KEY);
+    if (activeSectionFromStorage) {
+      setActiveSection(parseInt(activeSectionFromStorage, 10));
+    }
+  }, []);
 
   return (
     <>
@@ -44,18 +58,18 @@ function App() {
             className={`navbar-item ${
               activeSection === section.id ? "active" : ""
             }`}
-            onClick={() => handleClickSection(section.id, section.path) }
+            onClick={() => handleClickSection(section.id, section.path)}
           >
             {section.name}
           </div>
         ))}
       </div>
       <Routes>
-        <Route path="/" element={<h1>Home component</h1>} />
-        <Route path="/about" element={<h1>About component</h1>} />
-        <Route path="/details" element={<h1>details component</h1>} />
-        <Route path="/contact-us" element={<h1>contact component</h1>} />
-        <Route path="*" element={<Navigate to="/"/>}/>
+        <Route path={ROUTES.HOME} element={<Home />} />
+        <Route path={ROUTES.ABOUT} element={<About />} />
+        <Route path={ROUTES.DETAILS} element={<Details />} />
+        <Route path={ROUTES.CONTACT_US} element={<ContactUs />} />
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </>
   );
